@@ -16,6 +16,7 @@ password_hash varchar(255) not null,
 id_number varchar(20) not null,
 created_at datetime not null default getdate(),
 constraint FK_Users_Roles foreign key(role_id) references Roles(role_id)
+constraint UQ_Users_Email unique(email)
 );
 
 CREATE TABLE Events(
@@ -25,13 +26,14 @@ event_name varchar(100) not null,
 event_description varchar(500),
 event_date datetime not null default getdate(),
 location varchar(150),
+created_at datetime not null default getdate(),
 constraint fk_events_users foreign key(organiser_id) references Users(user_id)
 );
 
 CREATE TABLE categories(
 category_id int identity primary key,
 event_id int not null,
-category_name varchar(50),
+category_name varchar(50) not null,
 distance decimal(5,2) not null,
 price decimal(8,2) not null default 0,
 max_participants int not null default 100,
@@ -45,7 +47,8 @@ category_id int not null,
 enrolment_date datetime not null default getdate(),
 status varchar(20) not null default 'Pending',
 constraint FK_Enrolments_Categories foreign key(category_id) references categories(category_id),
-constraint FK_Enrolments_Users foreign key(participant_id) references Users(user_id)
+constraint FK_Enrolments_Users foreign key(participant_id) references Users(user_id),
+constraint UQ_Enrolments_Participant_Category unique(participant_id, category_id)
 );
 
 CREATE TABLE Results(
@@ -55,6 +58,7 @@ finish_time time null,
 position int null,
 recorded_at datetime not null default getdate(),
 constraint FK_Results_Enrolments foreign key(enrolment_id) references Enrolments(enrolment_id)
+constraint UQ_Results_Enrolment unique(enrolment_id)
 );
 
 insert into Roles(role_name) values ('Organiser');
