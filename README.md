@@ -1,4 +1,4 @@
-\# RaceDay
+RaceDay
 
 
 
@@ -10,7 +10,7 @@ RaceDay is a web-based event management system for the South African road runnin
 
 
 
-\*\*YouTube video (unlisted):\*\* YOUTUBE\_LINK\_HERE
+\*\*YouTube video (unlisted):https://youtu.be/5CLidgMO5wQ
 
 
 
