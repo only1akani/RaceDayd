@@ -1,0 +1,31 @@
+#this workflow builds the part 2 api and runs all the unit tests
+#it runs every time i push, so i know straight away if something breaks
+name: Part 2 - Build and Test
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      #start of steps
+      - name: Checkout repo
+        uses: actions/checkout@v4
+
+      - name: Setup .NET 8
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Restore packages
+        run: dotnet restore Part2/RaceDay.sln
+
+      - name: Build
+        run: dotnet build Part2/RaceDay.sln --no-restore -c Release
+
+      - name: Run unit tests
+        run: dotnet test Part2/RaceDay.sln --no-build -c Release --logger "console;verbosity=normal"
+      #end of steps
