@@ -1,4 +1,6 @@
 using Microsoft.EntityFrameworkCore;
+using System.Reflection;
+using Microsoft.OpenApi.Models;
 using RaceDay.Api.Data;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -19,7 +21,21 @@ builder.Services.AddSession(options =>
 });
 
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    //title and description shown at the top of the Swagger page
+    options.SwaggerDoc("v1", new OpenApiInfo
+    {
+        Title = "RaceDay API",
+        Version = "v1",
+        Description = "API for the RaceDay event management system. Log in through /api/auth/login first. " +
+                      "Organisers manage events, categories and results. Participants enrol in events and view their own results."
+    });
+
+    //read the /// comments from the controllers so Swagger can describe each endpoint
+    string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
+    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFile));
+});
 
 var app = builder.Build();
 
