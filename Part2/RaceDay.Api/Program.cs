@@ -34,7 +34,11 @@ builder.Services.AddSwaggerGen(options =>
 
     //read the /// comments from the controllers so Swagger can describe each endpoint
     string xmlFile = $"{Assembly.GetExecutingAssembly().GetName().Name}.xml";
-    options.IncludeXmlComments(Path.Combine(AppContext.BaseDirectory, xmlFile));
+    string xmlPath = Path.Combine(AppContext.BaseDirectory, xmlFile);
+    if (File.Exists(xmlPath))
+    {
+        options.IncludeXmlComments(xmlPath);
+    }
 });
 
 var app = builder.Build();
@@ -55,3 +59,6 @@ app.UseAuthorization();
 app.MapControllers();
 
 app.Run();
+
+//lets the test project start the API
+public partial class Program { }
