@@ -4,7 +4,7 @@ RaceDay is a web-based event management system for the South African road runnin
 
 ## Part 2: RESTful API
 
-**YouTube video (unlisted):** https://youtu.be/5CLidgMO5wQ
+**YouTube video (unlisted):** https://youtu.be/uYrTtDjDf04
 
 **GitHub repository:** https://github.com/only1akani/RaceDayd
 
