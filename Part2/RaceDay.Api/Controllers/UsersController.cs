@@ -4,6 +4,7 @@ using RaceDay.Api.Data;
 using RaceDay.Api.Dtos;
 using RaceDay.Api.Filters;
 using RaceDay.Api.Models;
+using RaceDay.Api.Services;
 
 namespace RaceDay.Api.Controllers
 {//start of namespace
@@ -15,14 +16,16 @@ namespace RaceDay.Api.Controllers
     {//start of class
 
         private readonly RaceDayDbContext _context;
+        private readonly IBlobStorageService _blobService;
 
-        public UsersController(RaceDayDbContext context)
+        public UsersController(RaceDayDbContext context, IBlobStorageService blobService)
         {
             _context = context;
+            _blobService = blobService;
         }
 
         /// <summary>
-        /// Gets the profile of the logged in user (full name, email and role).
+        /// Gets the profile of the logged in user (full name, email, role and profile picture).
         /// </summary>
         /// <param name="id">the user id (must be your own id)</param>
         /// <returns>200 with the profile, 401 if not logged in, 403 if it is not your profile, 404 if the user does not exist</returns>
@@ -51,7 +54,9 @@ namespace RaceDay.Api.Controllers
                 userId = user.UserId,
                 fullName = user.FullName,
                 email = user.Email,
-                role = user.Role!.RoleName
+                role = user.Role!.RoleName,
+                profilePictureUrl = user.ProfilePictureUrl,
+                createdAt = user.CreatedAt
             });
 
         }//end of method
@@ -96,6 +101,54 @@ namespace RaceDay.Api.Controllers
             await _context.SaveChangesAsync();
 
             return Ok(new { message = "Profile updated." });
+
+        }//end of method
+
+        /// <summary>
+        /// Uploads a profile picture to Azure Blob Storage and saves the link on the user.
+        /// </summary>
+        /// <param name="id">the user id (must be your own id)</param>
+        /// <param name="file">an image file (.jpg, .jpeg, .png or .webp, up to 5 MB)</param>
+        /// <returns>200 with the profilePictureUrl, 400 for an invalid file, 401 if not logged in, 403 if it is not your profile, 404 if the user does not exist, 500 if the upload to Azure fails</returns>
+        [HttpPost("{id}/profile-picture")]
+        [Consumes("multipart/form-data")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        [ProducesResponseType(StatusCodes.Status500InternalServerError)]
+        public async Task<IActionResult> UploadProfilePicture(int id, IFormFile file)
+        {//start of method
+
+            User? user = await _context.Users.FindAsync(id);
+            if (user == null)
+            {
+                return NotFound(new { message = "User not found." });
+            }
+
+            if (user.UserId != HttpContext.Session.GetInt32("UserId"))
+            {
+                return StatusCode(403, new { message = "You can only change your own profile picture." });
+            }
+
+            string? problem = ImageRules.Validate(file);
+            if (problem != null)
+            {
+                return BadRequest(new { message = problem });
+            }
+
+            try
+            {
+                user.ProfilePictureUrl = await _blobService.UploadImageAsync(BlobContainers.ProfilePictures, file);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                return StatusCode(500, new { message = "The image could not be uploaded. Please try again." });
+            }
+
+            return Ok(new { profilePictureUrl = user.ProfilePictureUrl });
 
         }//end of method
 
