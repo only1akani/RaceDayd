@@ -1,0 +1,31 @@
+﻿@model EventSummary
+
+<div class="rd-card rd-card-hover h-100 d-flex flex-column">
+    @if (!string.IsNullOrWhiteSpace(Model.BannerUrl))
+    {
+        <img src="@Model.BannerUrl" alt="@Model.EventName banner" class="rd-card-img" loading="lazy" />
+    }
+    else
+    {
+        <div class="rd-img-placeholder"><i class="bi @UiHelpers.EventIcon(Model.EventType)"></i></div>
+    }
+
+    <div class="p-4 d-flex flex-column flex-grow-1">
+        <div class="mb-2"><span class="rd-type-tag">@Model.EventType</span></div>
+        <h3 class="h4">@Model.EventName</h3>
+
+        <ul class="list-unstyled text-muted rd-info-list mb-3">
+            <li><i class="bi bi-calendar-event rd-icon me-2"></i>@Model.EventDate.ToString("ddd, d MMM yyyy, HH:mm")</li>
+            @if (!string.IsNullOrWhiteSpace(Model.Location))
+            {
+                <li><i class="bi bi-geo-alt rd-icon me-2"></i>@Model.Location</li>
+            }
+            @if (Model.Distance > 0)
+            {
+                <li><i class="bi bi-flag rd-icon me-2"></i>@Model.Distance.ToString("0.##") km</li>
+            }
+        </ul>
+
+        <a asp-controller="Events" asp-action="Details" asp-route-id="@Model.EventId" class="btn btn-navy mt-auto">View event</a>
+    </div>
+</div>
