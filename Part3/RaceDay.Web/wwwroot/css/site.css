@@ -435,3 +435,36 @@ h1, h2, h3, h4, h5, .rd-heading {
 .input-validation-error {
     border-color: #D9381E;
 }
+/* event cards, banners and detail page */
+.rd-icon {
+    color: var(--rd-orange);
+}
+
+.rd-info-list li {
+    margin-bottom: 0.35rem;
+}
+
+.rd-hero-compact {
+    padding: 2.6rem 2.5rem;
+}
+
+    .rd-hero-compact h1 {
+        font-size: 2.8rem;
+    }
+
+.rd-banner {
+    width: 100%;
+    height: 300px;
+    object-fit: cover;
+    display: block;
+}
+
+.rd-banner-placeholder {
+    height: 300px;
+    font-size: 4.5rem;
+}
+
+.rd-category-row {
+    padding: 1.1rem 1.4rem;
+    border-left: 6px solid var(--rd-orange);
+}
