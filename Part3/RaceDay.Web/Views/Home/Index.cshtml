@@ -1,8 +1,49 @@
 ﻿@{
-    ViewData["Title"] = "Home Page";
+    ViewData["Title"] = "Home";
+    string? role = Context.Session.GetString("Role");
 }
 
-<div class="text-center">
-    <h1 class="display-4">Welcome</h1>
-    <p>Learn about <a href="https://learn.microsoft.com/aspnet/core">building Web apps with ASP.NET Core</a>.</p>
+<section class="rd-hero mb-5">
+    <div class="rd-hero-content">
+        <h1>Find your <span>next race</span></h1>
+        <p>Run it, walk it or ride it. Browse events, enter in a click, and track every finish time in one place.</p>
+
+        @if (role == "Organiser")
+        {
+            <a class="btn btn-primary btn-lg me-2" asp-controller="Organiser" asp-action="Dashboard">Go to my dashboard</a>
+        }
+        else if (role == "Participant")
+        {
+            <a class="btn btn-primary btn-lg me-2" asp-controller="Participant" asp-action="MyEvents">See my events</a>
+        }
+        else
+        {
+            <a class="btn btn-primary btn-lg me-2" asp-controller="Account" asp-action="Register">Join RaceDay</a>
+            <a class="btn btn-outline-light btn-lg" asp-controller="Account" asp-action="Login">Log in</a>
+        }
+    </div>
+</section>
+
+<div class="row g-4">
+    <div class="col-md-4">
+        <div class="rd-card rd-card-hover p-4 h-100">
+            <div class="rd-feature-icon"><i class="bi bi-calendar-event"></i></div>
+            <h3>Find an event</h3>
+            <p class="text-muted mb-0">Browse upcoming runs, walks and cycle races, and filter by type or location.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="rd-card rd-card-hover p-4 h-100">
+            <div class="rd-feature-icon"><i class="bi bi-lightning-charge"></i></div>
+            <h3>Enter in a click</h3>
+            <p class="text-muted mb-0">Choose your distance category and your place is recorded straight away.</p>
+        </div>
+    </div>
+    <div class="col-md-4">
+        <div class="rd-card rd-card-hover p-4 h-100">
+            <div class="rd-feature-icon"><i class="bi bi-trophy"></i></div>
+            <h3>Track your results</h3>
+            <p class="text-muted mb-0">See your finish times and positions for every race you have completed.</p>
+        </div>
+    </div>
 </div>
