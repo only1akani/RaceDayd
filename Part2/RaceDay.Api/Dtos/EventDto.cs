@@ -21,5 +21,13 @@ namespace RaceDay.Api.Dtos
         [MaxLength(150)]
         public string? Location { get; set; }
 
+        //Run, Walk or Cycle (optional, defaults to Run)
+        [MaxLength(20)]
+        public string? EventType { get; set; }
+
+        //main distance in km (optional)
+        [Range(0, 1000)]
+        public decimal? Distance { get; set; }
+
     }//end of class
 }//end of namespace
