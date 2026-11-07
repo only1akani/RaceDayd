@@ -1,6 +1,7 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using RaceDay.Api.Data;
+using RaceDay.Api.Dtos;
 using RaceDay.Api.Filters;
 using RaceDay.Api.Models;
 
@@ -10,6 +11,9 @@ namespace RaceDay.Api.Controllers
     [ApiController]
     public class EnrolmentsController : ControllerBase
     {//start of class
+
+        //the statuses an enrolment can have
+        private static readonly string[] Statuses = { "Pending", "Confirmed" };
 
         private readonly RaceDayDbContext _context;
 
@@ -78,7 +82,7 @@ namespace RaceDay.Api.Controllers
         }//end of method
 
         /// <summary>
-        /// Gets every enrolment that belongs to the logged in participant.
+        /// Gets every enrolment that belongs to the logged in participant, with the event details.
         /// </summary>
         /// <returns>200 with an array of the participant's enrolments, 401 if not logged in, 403 if not a Participant</returns>
         [HttpGet("api/enrolments/my")]
@@ -93,6 +97,7 @@ namespace RaceDay.Api.Controllers
 
             var enrolments = await _context.Enrolments
                 .Where(e => e.ParticipantId == participantId)
+                .OrderBy(e => e.Category!.Event!.EventDate)
                 .Select(e => new
                 {
                     enrolmentId = e.EnrolmentId,
@@ -100,9 +105,13 @@ namespace RaceDay.Api.Controllers
                     enrolmentDate = e.EnrolmentDate,
                     categoryId = e.CategoryId,
                     categoryName = e.Category!.CategoryName,
+                    price = e.Category.Price,
                     eventId = e.Category.EventId,
                     eventName = e.Category.Event!.EventName,
-                    eventDate = e.Category.Event.EventDate
+                    eventDate = e.Category.Event.EventDate,
+                    location = e.Category.Event.Location,
+                    eventType = e.Category.Event.EventType,
+                    bannerUrl = e.Category.Event.BannerUrl
                 })
                 .ToListAsync();
 
@@ -111,7 +120,7 @@ namespace RaceDay.Api.Controllers
         }//end of method
 
         /// <summary>
-        /// Gets every enrolment for one event so the organiser can see who has entered. Only the owner of the event can view them.
+        /// Gets every enrolment for one event so the organiser can see who has entered, including any captured result. Only the owner of the event can view them.
         /// </summary>
         /// <param name="eventId">the event id</param>
         /// <returns>200 with an array of enrolments, 401 if not logged in, 403 if not the owner or not an Organiser, 404 if the event does not exist</returns>
@@ -138,6 +147,7 @@ namespace RaceDay.Api.Controllers
 
             var enrolments = await _context.Enrolments
                 .Where(e => e.Category!.EventId == eventId)
+                .OrderBy(e => e.Participant!.FullName)
                 .Select(e => new
                 {
                     enrolmentId = e.EnrolmentId,
@@ -147,11 +157,59 @@ namespace RaceDay.Api.Controllers
                     participantName = e.Participant!.FullName,
                     participantEmail = e.Participant.Email,
                     categoryId = e.CategoryId,
-                    categoryName = e.Category!.CategoryName
+                    categoryName = e.Category!.CategoryName,
+                    resultId = e.Result != null ? (int?)e.Result.ResultId : null,
+                    finishTime = e.Result != null ? e.Result.FinishTime : null,
+                    position = e.Result != null ? e.Result.Position : null
                 })
                 .ToListAsync();
 
             return Ok(enrolments);
+
+        }//end of method
+
+        /// <summary>
+        /// Changes the status of an enrolment to Pending or Confirmed. Only the organiser who owns the event can do this.
+        /// </summary>
+        /// <param name="id">the enrolment id</param>
+        /// <param name="dto">status (Pending or Confirmed)</param>
+        /// <returns>200 when updated, 400 for an invalid status, 401 if not logged in, 403 if not the owner or not an Organiser, 404 if the enrolment does not exist</returns>
+        [HttpPut("api/enrolments/{id}/status")]
+        [SessionAuthorize("Organiser")]
+        [ProducesResponseType(StatusCodes.Status200OK)]
+        [ProducesResponseType(StatusCodes.Status400BadRequest)]
+        [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+        [ProducesResponseType(StatusCodes.Status403Forbidden)]
+        [ProducesResponseType(StatusCodes.Status404NotFound)]
+        public async Task<IActionResult> UpdateStatus(int id, EnrolmentStatusDto dto)
+        {//start of method
+
+            Enrolment? enrolment = await _context.Enrolments
+                .Include(e => e.Category)
+                .ThenInclude(c => c!.Event)
+                .FirstOrDefaultAsync(e => e.EnrolmentId == id);
+
+            if (enrolment == null)
+            {
+                return NotFound(new { message = "Enrolment not found." });
+            }
+
+            //only the organiser of the event can change the status
+            if (enrolment.Category!.Event!.OrganiserId != HttpContext.Session.GetInt32("UserId"))
+            {
+                return StatusCode(403, new { message = "You do not own this event." });
+            }
+
+            string? status = Statuses.FirstOrDefault(s => s.Equals(dto.Status.Trim(), StringComparison.OrdinalIgnoreCase));
+            if (status == null)
+            {
+                return BadRequest(new { message = "Status must be Pending or Confirmed." });
+            }
+
+            enrolment.Status = status;
+            await _context.SaveChangesAsync();
+
+            return Ok(new { message = "Enrolment updated.", status = enrolment.Status });
 
         }//end of method
 
