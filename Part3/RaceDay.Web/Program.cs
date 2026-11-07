@@ -1,4 +1,9 @@
+using System.Globalization;
 using RaceDay.Web.Services;
+
+//use the same date and number formats everywhere, so the site looks the same locally and in Docker
+CultureInfo.DefaultThreadCurrentCulture = CultureInfo.InvariantCulture;
+CultureInfo.DefaultThreadCurrentUICulture = CultureInfo.InvariantCulture;
 
 var builder = WebApplication.CreateBuilder(args);
 
