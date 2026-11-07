@@ -36,6 +36,21 @@ namespace RaceDay.Api.Models
         [Column("location")]
         public string? Location { get; set; }
 
+        //Run, Walk or Cycle
+        [Required]
+        [MaxLength(20)]
+        [Column("event_type")]
+        public string EventType { get; set; } = "Run";
+
+        //main distance of the event in km
+        [Column("distance", TypeName = "decimal(6,2)")]
+        public decimal Distance { get; set; }
+
+        //link to the banner image stored in Azure Blob Storage
+        [MaxLength(500)]
+        [Column("banner_url")]
+        public string? BannerUrl { get; set; }
+
         [Column("created_at")]
         public DateTime CreatedAt { get; set; } = DateTime.Now;
 
