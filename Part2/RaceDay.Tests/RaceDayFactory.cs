@@ -2,13 +2,15 @@
 using Microsoft.AspNetCore.Mvc.Testing;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.DependencyInjection.Extensions;
 using Microsoft.Extensions.Hosting;
 using RaceDay.Api.Data;
+using RaceDay.Api.Services;
 
 namespace RaceDay.Tests
 {//start of namespace
 
-    //starts the real API for the tests, but with an in-memory database instead of SQL Server
+    //starts the real API for the tests, but with an in-memory database and a fake image uploader
     public class RaceDayFactory : WebApplicationFactory<Program>
     {//start of class
 
@@ -32,6 +34,10 @@ namespace RaceDay.Tests
                 //use the in-memory database instead
                 services.AddDbContext<RaceDayDbContext>(options =>
                     options.UseInMemoryDatabase(_dbName));
+
+                //use the fake uploader instead of Azure
+                services.RemoveAll<IBlobStorageService>();
+                services.AddScoped<IBlobStorageService, FakeBlobStorageService>();
             });
 
         }//end of method
