@@ -1,3 +1,4 @@
+using RaceDay.Api.Services;
 using Microsoft.EntityFrameworkCore;
 using System.Reflection;
 using Microsoft.OpenApi.Models;
@@ -10,6 +11,9 @@ builder.Services.AddControllers();
 //connect to the SQL Server database
 builder.Services.AddDbContext<RaceDayDbContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("RaceDayConnection")));
+
+//uploads images to Azure Blob Storage
+builder.Services.AddScoped<IBlobStorageService, BlobStorageService>();
 
 //session setup: the server remembers who is logged in
 builder.Services.AddDistributedMemoryCache();
