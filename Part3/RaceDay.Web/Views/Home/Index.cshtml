@@ -1,22 +1,19 @@
-﻿@{
-    ViewData["Title"] = "Home";
+﻿@model HomeViewModel
+@{
+    ViewData["Title"] = "Events";
     string? role = Context.Session.GetString("Role");
 }
 
-<section class="rd-hero mb-5">
+<section class="rd-hero rd-hero-compact mb-4">
     <div class="rd-hero-content">
         <h1>Find your <span>next race</span></h1>
-        <p>Run it, walk it or ride it. Browse events, enter in a click, and track every finish time in one place.</p>
+        <p>Run it, walk it or ride it. Pick an event, enter in a click, and track every finish time.</p>
 
         @if (role == "Organiser")
         {
-            <a class="btn btn-primary btn-lg me-2" asp-controller="Organiser" asp-action="Dashboard">Go to my dashboard</a>
+            <a class="btn btn-primary btn-lg" asp-controller="Organiser" asp-action="Dashboard">Go to my dashboard</a>
         }
-        else if (role == "Participant")
-        {
-            <a class="btn btn-primary btn-lg me-2" asp-controller="Participant" asp-action="MyEvents">See my events</a>
-        }
-        else
+        else if (role == null)
         {
             <a class="btn btn-primary btn-lg me-2" asp-controller="Account" asp-action="Register">Join RaceDay</a>
             <a class="btn btn-outline-light btn-lg" asp-controller="Account" asp-action="Login">Log in</a>
@@ -24,26 +21,50 @@
     </div>
 </section>
 
-<div class="row g-4">
-    <div class="col-md-4">
-        <div class="rd-card rd-card-hover p-4 h-100">
-            <div class="rd-feature-icon"><i class="bi bi-calendar-event"></i></div>
-            <h3>Find an event</h3>
-            <p class="text-muted mb-0">Browse upcoming runs, walks and cycle races, and filter by type or location.</p>
+<h2 class="rd-page-title">Upcoming events</h2>
+
+<form method="get" asp-action="Index" class="rd-card p-3 mb-4">
+    <div class="row g-2 align-items-end">
+        <div class="col-md-5">
+            <label class="form-label" for="search">Search</label>
+            <input id="search" name="search" value="@Model.Search" class="form-control" placeholder="Event name or location" />
+        </div>
+        <div class="col-md-3">
+            <label class="form-label" for="type">Event type</label>
+            <select id="type" name="type" class="form-select">
+                <option value="">All types</option>
+                <option value="Run" selected="@(Model.Type == "Run")">Run</option>
+                <option value="Walk" selected="@(Model.Type == "Walk")">Walk</option>
+                <option value="Cycle" selected="@(Model.Type == "Cycle")">Cycle</option>
+            </select>
+        </div>
+        <div class="col-md-4 d-flex gap-2">
+            <button type="submit" class="btn btn-primary flex-grow-1">Filter</button>
+            <a asp-action="Index" class="btn btn-outline-primary">Clear</a>
         </div>
     </div>
-    <div class="col-md-4">
-        <div class="rd-card rd-card-hover p-4 h-100">
-            <div class="rd-feature-icon"><i class="bi bi-lightning-charge"></i></div>
-            <h3>Enter in a click</h3>
-            <p class="text-muted mb-0">Choose your distance category and your place is recorded straight away.</p>
-        </div>
+</form>
+
+@if (Model.ErrorMessage != null)
+{
+    <div class="alert rd-alert rd-alert-danger">@Model.ErrorMessage</div>
+}
+else if (Model.Events.Count == 0)
+{
+    <div class="rd-card p-5 text-center">
+        <div class="rd-feature-icon mx-auto"><i class="bi bi-calendar-event"></i></div>
+        <h3>No events found</h3>
+        <p class="text-muted mb-0">Try a different search or clear the filters. New events are added all the time.</p>
     </div>
-    <div class="col-md-4">
-        <div class="rd-card rd-card-hover p-4 h-100">
-            <div class="rd-feature-icon"><i class="bi bi-trophy"></i></div>
-            <h3>Track your results</h3>
-            <p class="text-muted mb-0">See your finish times and positions for every race you have completed.</p>
-        </div>
+}
+else
+{
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (EventSummary item in Model.Events)
+        {
+            <div class="col">
+                <partial name="_EventCard" model="item" />
+            </div>
+        }
     </div>
-</div>
+}
