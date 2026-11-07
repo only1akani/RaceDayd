@@ -88,7 +88,7 @@ namespace RaceDay.Api.Controllers
         }//end of method
 
         /// <summary>
-        /// Gets all the results that belong to the logged in participant, so they can track their performance history.
+        /// Gets all the results that belong to the logged in participant, with the event details and the total number of finishers in the same category.
         /// </summary>
         /// <returns>200 with an array of the participant's results, 401 if not logged in, 403 if not a Participant</returns>
         [HttpGet("api/results/my")]
@@ -103,15 +103,21 @@ namespace RaceDay.Api.Controllers
 
             var results = await _context.Results
                 .Where(r => r.Enrolment!.ParticipantId == participantId)
+                .OrderByDescending(r => r.Enrolment!.Category!.Event!.EventDate)
                 .Select(r => new
                 {
                     resultId = r.ResultId,
                     enrolmentId = r.EnrolmentId,
-                    eventName = r.Enrolment!.Category!.Event!.EventName,
+                    eventId = r.Enrolment!.Category!.EventId,
+                    eventName = r.Enrolment.Category.Event!.EventName,
                     eventDate = r.Enrolment.Category.Event.EventDate,
+                    location = r.Enrolment.Category.Event.Location,
+                    eventType = r.Enrolment.Category.Event.EventType,
                     categoryName = r.Enrolment.Category.CategoryName,
                     finishTime = r.FinishTime,
                     position = r.Position,
+                    //how many people finished in the same category, for "47 out of 312"
+                    totalFinishers = _context.Results.Count(x => x.Enrolment!.CategoryId == r.Enrolment.CategoryId),
                     recordedAt = r.RecordedAt
                 })
                 .ToListAsync();
