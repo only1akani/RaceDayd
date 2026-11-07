@@ -1,0 +1,106 @@
+﻿@model EventDetailsViewModel
+@{
+    EventDetails ev = Model.Event;
+    ViewData["Title"] = ev.EventName;
+    string? role = Context.Session.GetString("Role");
+    bool finished = ev.EventDate < DateTime.Now;
+}
+
+<a asp-controller="Home" asp-action="Index" class="text-decoration-none fw-semibold">&larr; Back to events</a>
+
+<div class="rd-card mt-3 mb-5">
+    @if (!string.IsNullOrWhiteSpace(ev.BannerUrl))
+    {
+        <img src="@ev.BannerUrl" alt="@ev.EventName banner" class="rd-banner" />
+    }
+    else
+    {
+        <div class="rd-img-placeholder rd-banner-placeholder"><i class="bi @UiHelpers.EventIcon(ev.EventType)"></i></div>
+    }
+
+    <div class="p-4 p-md-5">
+        <span class="rd-type-tag">@ev.EventType</span>
+        @if (finished)
+        {
+            <span class="rd-type-tag" style="background: var(--rd-muted);">Finished</span>
+        }
+
+        <h1 class="mt-3">@ev.EventName</h1>
+
+        <div class="row g-3 my-3">
+            <div class="col-md-6 col-lg-3"><i class="bi bi-calendar-event rd-icon me-2"></i>@ev.EventDate.ToString("dddd, d MMMM yyyy")</div>
+            <div class="col-md-6 col-lg-3"><i class="bi bi-clock rd-icon me-2"></i>Starts at @ev.EventDate.ToString("HH:mm")</div>
+            @if (!string.IsNullOrWhiteSpace(ev.Location))
+            {
+                <div class="col-md-6 col-lg-3"><i class="bi bi-geo-alt rd-icon me-2"></i>@ev.Location</div>
+            }
+            @if (ev.Distance > 0)
+            {
+                <div class="col-md-6 col-lg-3"><i class="bi bi-flag rd-icon me-2"></i>@ev.Distance.ToString("0.##") km</div>
+            }
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(ev.EventDescription))
+        {
+            <p class="lead mb-2">@ev.EventDescription</p>
+        }
+        <p class="text-muted mb-0">Organised by @ev.OrganiserName</p>
+    </div>
+</div>
+
+<h2 class="rd-page-title">Choose your category</h2>
+
+@if (ev.Categories.Count == 0)
+{
+    <div class="rd-card p-4 text-muted">The organiser has not added any categories yet. Please check back soon.</div>
+}
+else
+{
+    @foreach (CategoryInfo c in ev.Categories)
+    {
+        string? status = Model.MyEnrolments.GetValueOrDefault(c.CategoryId);
+
+        <div class="rd-card rd-category-row mb-3">
+            <div class="row align-items-center g-3">
+                <div class="col-md-5">
+                    <h3 class="h4 mb-1">@c.CategoryName</h3>
+                    <span class="text-muted">@c.Distance.ToString("0.##") km</span>
+                </div>
+                <div class="col-md-3">
+                    <div class="fw-bold fs-5">@(c.Price > 0 ? "R " + c.Price.ToString("0.00") : "Free")</div>
+                    <small class="text-muted">Up to @c.MaxParticipants participants</small>
+                </div>
+                <div class="col-md-4 text-md-end">
+                    @if (role == "Participant")
+                    {
+                        if (status != null)
+                        {
+                            <span class="me-2 text-muted">You are entered:</span>
+                            <partial name="_StatusBadge" model="status" />
+                        }
+                        else if (finished)
+                        {
+                            <span class="text-muted">This event has finished</span>
+                        }
+                        else
+                        {
+                            <form asp-controller="Participant" asp-action="Enrol" method="post">
+                                <input type="hidden" name="categoryId" value="@c.CategoryId" />
+                                <input type="hidden" name="eventId" value="@ev.EventId" />
+                                <button type="submit" class="btn btn-primary">Enter this category</button>
+                            </form>
+                        }
+                    }
+                    else if (role == "Organiser")
+                    {
+                        <span class="text-muted small">Only participants can enter events</span>
+                    }
+                    else
+                    {
+                        <a asp-controller="Account" asp-action="Login" class="btn btn-outline-primary">Log in to enter</a>
+                    }
+                </div>
+            </div>
+        </div>
+    }
+}
