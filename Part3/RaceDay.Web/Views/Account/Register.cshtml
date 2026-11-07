@@ -1,0 +1,79 @@
+﻿@model RegisterViewModel
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-9 col-lg-7">
+        <div class="rd-card p-4 p-md-5">
+            <h1 class="rd-page-title">Join RaceDay</h1>
+
+            <form asp-action="Register" method="post">
+                <div asp-validation-summary="ModelOnly" class="alert rd-alert rd-alert-danger"></div>
+
+                <label class="form-label">I want to join as</label>
+                <div class="row g-3 mb-4">
+                    <div class="col-sm-6">
+                        <input type="radio" class="btn-check" asp-for="Role" value="Participant" id="roleParticipant" autocomplete="off" />
+                        <label class="btn btn-outline-primary w-100 py-3" for="roleParticipant">
+                            <i class="bi bi-person-running d-block fs-3"></i>
+                            <strong>Participant</strong><br />
+                            <small>Enter events and track my results</small>
+                        </label>
+                    </div>
+                    <div class="col-sm-6">
+                        <input type="radio" class="btn-check" asp-for="Role" value="Organiser" id="roleOrganiser" autocomplete="off" />
+                        <label class="btn btn-outline-primary w-100 py-3" for="roleOrganiser">
+                            <i class="bi bi-flag d-block fs-3"></i>
+                            <strong>Organiser</strong><br />
+                            <small>Create and manage events</small>
+                        </label>
+                    </div>
+                </div>
+                <span asp-validation-for="Role" class="field-validation-error"></span>
+
+                <div class="row">
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="FullName" class="form-label"></label>
+                        <input asp-for="FullName" class="form-control" autocomplete="name" />
+                        <span asp-validation-for="FullName" class="field-validation-error"></span>
+                    </div>
+                    <div class="col-md-6 mb-3">
+                        <label asp-for="IdNumber" class="form-label"></label>
+                        <input asp-for="IdNumber" class="form-control" />
+                        <span asp-validation-for="IdNumber" class="field-validation-error"></span>
+                    </div>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Email" class="form-label"></label>
+                    <input asp-for="Email" class="form-control" autocomplete="email" />
+                    <span asp-validation-for="Email" class="field-validation-error"></span>
+                </div>
+
+                <div class="row">
+                    <div class="col-md-6 mb-4">
+                        <label asp-for="Password" class="form-label"></label>
+                        <input asp-for="Password" class="form-control" autocomplete="new-password" />
+                        <span asp-validation-for="Password" class="field-validation-error"></span>
+                    </div>
+                    <div class="col-md-6 mb-4">
+                        <label asp-for="ConfirmPassword" class="form-label"></label>
+                        <input asp-for="ConfirmPassword" class="form-control" autocomplete="new-password" />
+                        <span asp-validation-for="ConfirmPassword" class="field-validation-error"></span>
+                    </div>
+                </div>
+
+                <button type="submit" class="btn btn-primary w-100 btn-lg">Create my account</button>
+            </form>
+
+            <p class="text-muted text-center mt-4 mb-0">
+                Already have an account? <a asp-action="Login">Log in</a>
+            </p>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
