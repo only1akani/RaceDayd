@@ -104,3 +104,27 @@ else
         </div>
     }
 }
+@if (Model.Results.Count > 0)
+{
+    <h2 class="rd-page-title mt-5">Results</h2>
+    <div class="rd-card">
+        <div class="table-responsive">
+            <table class="table rd-table mb-0 align-middle">
+                <thead>
+                    <tr><th>Pos</th><th>Participant</th><th>Category</th><th>Finish time</th></tr>
+                </thead>
+                <tbody>
+                    @foreach (PublicResult r in Model.Results)
+                    {
+                        <tr>
+                            <td class="fw-bold">@(r.Position.HasValue? UiHelpers.Ordinal(r.Position.Value) : "-")</td>
+                            <td>@r.ParticipantName</td>
+                            <td>@r.CategoryName</td>
+                            <td>@UiHelpers.FormatTime(r.FinishTime)</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        </div>
+    </div>
+}

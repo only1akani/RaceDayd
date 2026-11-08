@@ -1,0 +1,27 @@
+﻿@model EventNavModel
+@{
+    string active = ViewData["ActiveTab"]?.ToString() ?? "";
+    string Tab(string name)
+    {
+        return active == name ? "active" : "";
+    }
+}
+
+<div class="mb-4">
+    <a asp-controller="ManageEvents" asp-action="Index" class="text-decoration-none fw-semibold">&larr; Back to my events</a>
+    <h1 class="mt-2 mb-3">@Model.EventName</h1>
+    <ul class="nav nav-pills rd-pills">
+        <li class="nav-item">
+            <a class="nav-link @Tab("Details")" asp-controller="ManageEvents" asp-action="Edit" asp-route-id="@Model.EventId"><i class="bi bi-pencil me-1"></i>Event details</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @Tab("Categories")" asp-controller="ManageCategories" asp-action="Index" asp-route-eventId="@Model.EventId"><i class="bi bi-tags me-1"></i>Categories</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @Tab("Enrolments")" asp-controller="ManageEnrolments" asp-action="Index" asp-route-eventId="@Model.EventId"><i class="bi bi-people me-1"></i>Enrolments</a>
+        </li>
+        <li class="nav-item">
+            <a class="nav-link @Tab("Results")" asp-controller="ManageResults" asp-action="Index" asp-route-eventId="@Model.EventId"><i class="bi bi-trophy me-1"></i>Results</a>
+        </li>
+    </ul>
+</div>

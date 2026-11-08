@@ -20,6 +20,8 @@
 
         //category id and the status of the logged in participant's enrolment in it
         public Dictionary<int, string> MyEnrolments { get; set; } = new Dictionary<int, string>();
+        //the published results of the event
+        public List<PublicResult> Results { get; set; } = new List<PublicResult>();
 
     }//end of class
 }//end of namespace

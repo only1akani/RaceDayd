@@ -35,6 +35,12 @@ namespace RaceDay.Web.Controllers
             }
 
             EventDetailsViewModel model = new EventDetailsViewModel { Event = ev };
+            //results are public once the organiser has saved them
+            ApiResponse resultsResponse = await _api.GetAsync($"api/events/{id}/results");
+            if (resultsResponse.IsSuccess)
+            {
+                model.Results = resultsResponse.Data<List<PublicResult>>() ?? new List<PublicResult>();
+            }
 
             //participants can see which categories they have already entered
             if (HttpContext.Session.GetString(SessionKeys.Role) == "Participant")
