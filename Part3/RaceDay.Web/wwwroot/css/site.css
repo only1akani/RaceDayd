@@ -468,3 +468,40 @@ h1, h2, h3, h4, h5, .rd-heading {
     padding: 1.1rem 1.4rem;
     border-left: 6px solid var(--rd-orange);
 }
+/* results page */
+.rd-medal {
+    width: 64px;
+    height: 64px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Barlow Condensed', Arial, sans-serif;
+    font-size: 1.9rem;
+    font-weight: 800;
+    color: #fff;
+    background: var(--rd-navy);
+}
+
+.rd-medal-1 {
+    background: #F5C542;
+    color: #4A3500;
+}
+
+.rd-medal-2 {
+    background: #C9D1DC;
+    color: #2A3444;
+}
+
+.rd-medal-3 {
+    background: #D98E5B;
+    color: #4A2300;
+}
+
+.rd-time {
+    font-family: 'Barlow Condensed', Arial, sans-serif;
+    font-size: 2.2rem;
+    font-weight: 800;
+    line-height: 1;
+    color: var(--rd-navy);
+}

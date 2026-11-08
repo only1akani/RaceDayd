@@ -52,7 +52,7 @@ else
                                 @if (!past)
                                 {
                                     <form asp-action="Cancel" asp-route-id="@item.EnrolmentId" method="post"
-                                          onsubmit="return confirm('Cancel your enrolment in @item.EventName?');">
+                                          onsubmit="return confirm('Cancel this enrolment?');">
                                         <button type="submit" class="btn btn-sm btn-outline-danger">Cancel</button>
                                     </form>
                                 }
