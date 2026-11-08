@@ -1,0 +1,26 @@
+﻿@model EventFormViewModel
+@{
+    ViewData["Title"] = "Edit event";
+    ViewData["ActiveTab"] = "Details";
+    EventNavModel nav = new EventNavModel { EventId = Model.EventId, EventName = string.IsNullOrWhiteSpace(Model.EventName) ? "Edit event" : Model.EventName };
+}
+
+<partial name="_EventNav" model="nav" />
+
+<div class="rd-card p-4 p-md-5">
+    <h2 class="h3 mb-4">Event details</h2>
+
+    <form asp-action="Edit" asp-route-id="@Model.EventId" method="post" enctype="multipart/form-data">
+        <input type="hidden" asp-for="EventId" />
+        <partial name="_EventFields" model="Model" />
+
+        <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary btn-lg">Save changes</button>
+            <a asp-action="Index" class="btn btn-outline-primary btn-lg">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

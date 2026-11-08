@@ -1,0 +1,23 @@
+﻿@model EventFormViewModel
+@{
+    ViewData["Title"] = "Create event";
+}
+
+<a asp-action="Index" class="text-decoration-none fw-semibold">&larr; Back to my events</a>
+
+<div class="rd-card p-4 p-md-5 mt-3">
+    <h1 class="rd-page-title">Create event</h1>
+
+    <form asp-action="Create" method="post" enctype="multipart/form-data">
+        <partial name="_EventFields" model="Model" />
+
+        <div class="d-flex gap-2 mt-4">
+            <button type="submit" class="btn btn-primary btn-lg">Create event</button>
+            <a asp-action="Index" class="btn btn-outline-primary btn-lg">Cancel</a>
+        </div>
+    </form>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}
