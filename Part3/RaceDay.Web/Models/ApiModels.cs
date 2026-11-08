@@ -71,6 +71,8 @@
     {//start of class
 
         public int ResultId { get; set; }
+
+        public int EnrolmentId { get; set; }
         public int EventId { get; set; }
         public string EventName { get; set; } = string.Empty;
         public DateTime EventDate { get; set; }
