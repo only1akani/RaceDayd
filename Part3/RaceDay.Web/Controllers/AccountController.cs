@@ -134,7 +134,12 @@ namespace RaceDay.Web.Controllers
 
             TempData["Success"] = $"Welcome back, {name}!";
 
-            //organisers will go to their dashboard once it exists (Step 6)
+            //organisers start on their dashboard, participants on the events page
+            if (result.Role == "Organiser")
+            {
+                return RedirectToAction("Dashboard", "Organiser");
+            }
+
             return RedirectToAction("Index", "Home");
 
         }//end of method
