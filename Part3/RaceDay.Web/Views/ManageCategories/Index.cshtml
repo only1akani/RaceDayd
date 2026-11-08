@@ -1,0 +1,63 @@
+﻿@model CategoriesPageViewModel
+@{
+    ViewData["Title"] = "Categories";
+    ViewData["ActiveTab"] = "Categories";
+    EventNavModel nav = new EventNavModel { EventId = Model.Event.EventId, EventName = Model.Event.EventName };
+}
+
+<partial name="_EventNav" model="nav" />
+
+<div class="row g-4">
+    <div class="col-lg-7">
+        <h2 class="h3 mb-3">Categories</h2>
+
+        @if (Model.Event.Categories.Count == 0)
+        {
+            <div class="rd-card p-4 text-muted">No categories yet. Add a distance or age category so participants can enter this event.</div>
+        }
+        else
+        {
+            <div class="rd-card">
+                <div class="table-responsive">
+                    <table class="table rd-table mb-0 align-middle">
+                        <thead>
+                            <tr><th>Category</th><th>Distance</th><th>Fee</th><th>Max</th><th></th></tr>
+                        </thead>
+                        <tbody>
+                            @foreach (CategoryInfo c in Model.Event.Categories)
+                            {
+                                <tr>
+                                    <td class="fw-bold">@c.CategoryName</td>
+                                    <td>@c.Distance.ToString("0.##") km</td>
+                                    <td>@(c.Price > 0 ? "R " + c.Price.ToString("0.00") : "Free")</td>
+                                    <td>@c.MaxParticipants</td>
+                                    <td class="text-end text-nowrap">
+                                        <a asp-action="Edit" asp-route-eventId="@Model.Event.EventId" asp-route-id="@c.CategoryId" class="btn btn-sm btn-navy">Edit</a>
+                                        <form asp-action="Delete" asp-route-eventId="@Model.Event.EventId" asp-route-id="@c.CategoryId" method="post" class="d-inline"
+                                              onsubmit="return confirm('Delete this category? Participants entered in it will lose their enrolment.');">
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Delete</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        }
+    </div>
+
+    <div class="col-lg-5">
+        <div class="rd-card p-4">
+            <h2 class="h3 mb-3">Add a category</h2>
+            <form asp-action="Create" method="post">
+                <partial name="_CategoryFields" model="Model" />
+                <button type="submit" class="btn btn-primary w-100">Add category</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+}

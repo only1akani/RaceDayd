@@ -1,0 +1,31 @@
+﻿@model CategoriesPageViewModel
+
+<div asp-validation-summary="ModelOnly" class="alert rd-alert rd-alert-danger"></div>
+
+<input type="hidden" asp-for="Form.EventId" />
+<input type="hidden" asp-for="Form.CategoryId" />
+
+<div class="mb-3">
+    <label asp-for="Form.CategoryName" class="form-label"></label>
+    <input asp-for="Form.CategoryName" class="form-control" placeholder="For example 10km Run or Under 20" />
+    <span asp-validation-for="Form.CategoryName" class="field-validation-error"></span>
+</div>
+
+<div class="row">
+    <div class="col-md-6 mb-3">
+        <label asp-for="Form.Distance" class="form-label"></label>
+        <input asp-for="Form.Distance" type="number" step="0.01" min="0.1" class="form-control" />
+        <span asp-validation-for="Form.Distance" class="field-validation-error"></span>
+    </div>
+    <div class="col-md-6 mb-3">
+        <label asp-for="Form.Price" class="form-label"></label>
+        <input asp-for="Form.Price" type="number" step="0.01" min="0" class="form-control" placeholder="0 for free" />
+        <span asp-validation-for="Form.Price" class="field-validation-error"></span>
+    </div>
+</div>
+
+<div class="mb-3">
+    <label asp-for="Form.MaxParticipants" class="form-label"></label>
+    <input asp-for="Form.MaxParticipants" type="number" min="1" class="form-control" placeholder="100 if left empty" />
+    <span asp-validation-for="Form.MaxParticipants" class="field-validation-error"></span>
+</div>
