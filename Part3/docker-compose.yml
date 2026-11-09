@@ -1,0 +1,14 @@
+# starts the RaceDay website in a container with one command
+# the API (Part 2) runs on the host computer, so the website reaches it through host.docker.internal
+services:
+  web:
+    build:
+      context: ./RaceDay.Web
+    image: raceday-web
+    container_name: raceday-web
+    ports:
+      - "8080:8080"
+    environment:
+      ApiSettings__BaseUrl: http://host.docker.internal:5022/
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
